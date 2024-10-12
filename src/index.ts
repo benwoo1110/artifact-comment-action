@@ -67,5 +67,5 @@ await octokit.request(updatePullRequest, {
     owner: inputs.repoOwner,
     repo: inputs.repoName,
     pull_number: pr.number,
-    body: ogPRBody + `\n HERE ARE THE LINKS:\n${links}`,
+    body: newBody,
 })
