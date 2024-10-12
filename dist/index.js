@@ -42,7 +42,6 @@ const msgSeparatorStart = `\r
 `;
 const title = "----\r\n\u{1F4E6} Artifacts generated:\r\n";
 const msgSeparatorEnd = `\r
-----\r
 <!-- artifact-comment-section ${prNumber} end (DO NOT EDIT ABOVE) -->`;
 var newBody = "";
 if (ogPRBody.indexOf(msgSeparatorStart) === -1) {

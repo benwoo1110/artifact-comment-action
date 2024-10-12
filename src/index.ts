@@ -50,7 +50,7 @@ for (const artifact of artifacts) {
 
 const msgSeparatorStart = `\r\n\r\n<!-- artifact-comment-section ${prNumber} start (DO NOT EDIT BELOW) -->\r\n`;
 const title = "----\r\n📦 Artifacts generated:\r\n"
-const msgSeparatorEnd = `\r\n----\r\n<!-- artifact-comment-section ${prNumber} end (DO NOT EDIT ABOVE) -->`;
+const msgSeparatorEnd = `\r\n<!-- artifact-comment-section ${prNumber} end (DO NOT EDIT ABOVE) -->`;
 
 var newBody = "";
 if (ogPRBody.indexOf(msgSeparatorStart) === -1) {
