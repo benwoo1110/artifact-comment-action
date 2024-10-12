@@ -38,10 +38,12 @@ for (const artifact of artifacts) {
 }
 const msgSeparatorStart = `\r
 \r
-<!-- download-section ${prNumber} start -->\r
+<!-- download-section ${prNumber} start (DO NOT EDIT BELOW) -->\r
+----\r
 `;
 const msgSeparatorEnd = `\r
-<!-- download-section ${prNumber} end -->`;
+----\r
+<!-- download-section ${prNumber} end (DO NOT EDIT ABOVE) -->`;
 var newBody = "";
 if (ogPRBody.indexOf(msgSeparatorStart) === -1) {
   newBody = ogPRBody + msgSeparatorStart + links + msgSeparatorEnd;

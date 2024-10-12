@@ -48,8 +48,8 @@ for (const artifact of artifacts) {
     links += `[${artifact.name}](https://nightly.link/${inputs.repoOwner}/${inputs.repoName}/actions/runs/${inputs.runId}/${artifact.name}.zip)\n`
 }
 
-const msgSeparatorStart = `\r\n\r\n<!-- download-section ${prNumber} start -->\r\n`;
-const msgSeparatorEnd = `\r\n<!-- download-section ${prNumber} end -->`;
+const msgSeparatorStart = `\r\n\r\n<!-- download-section ${prNumber} start (DO NOT EDIT BELOW) -->\r\n----\r\n`;
+const msgSeparatorEnd = `\r\n----\r\n<!-- download-section ${prNumber} end (DO NOT EDIT ABOVE) -->`;
 
 var newBody = "";
 if (ogPRBody.indexOf(msgSeparatorStart) === -1) {
