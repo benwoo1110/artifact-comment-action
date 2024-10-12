@@ -31,5 +31,5 @@ inputs:
 #     description: 'The type of release. Either beta or release.'
 
 runs:
-  using: 'node16'
+  using: 'node20'
   main: 'dist/index.js'

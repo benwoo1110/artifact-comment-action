@@ -33,7 +33,8 @@ console.log(artifactsResp.data);
 const artifacts = artifactsResp.data.artifacts;
 var links = "";
 for (const artifact of artifacts) {
-  links += artifact.archive_download_url + "\n";
+  links += `https://nightly.link/${inputs.repoOwner}/${inputs.repoName}/actions/runs/${inputs.runId}/${artifact.name}.zip
+`;
 }
 await octokit.request(updatePullRequest, {
   owner: inputs.repoOwner,
