@@ -1,0 +1,14 @@
+name: "Test"
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: benwoo1110/artifact-comment-action@test
