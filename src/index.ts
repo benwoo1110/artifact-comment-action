@@ -45,20 +45,21 @@ const artifacts = artifactsResp.data.artifacts
 
 var links = ""
 for (const artifact of artifacts) {
-    links += `[${artifact.name}](https://nightly.link/${inputs.repoOwner}/${inputs.repoName}/actions/runs/${inputs.runId}/${artifact.name}.zip)\n`
+    links += `- [${artifact.name}](https://nightly.link/${inputs.repoOwner}/${inputs.repoName}/actions/runs/${inputs.runId}/${artifact.name}.zip)\r\n`
 }
 
-const msgSeparatorStart = `\r\n\r\n<!-- download-section ${prNumber} start (DO NOT EDIT BELOW) -->\r\n----\r\n`;
-const msgSeparatorEnd = `\r\n----\r\n<!-- download-section ${prNumber} end (DO NOT EDIT ABOVE) -->`;
+const msgSeparatorStart = `\r\n\r\n<!-- artifact-comment-section ${prNumber} start (DO NOT EDIT BELOW) -->\r\n`;
+const title = "----\r\n📦 Artifacts generated:\r\n"
+const msgSeparatorEnd = `\r\n----\r\n<!-- artifact-comment-section ${prNumber} end (DO NOT EDIT ABOVE) -->`;
 
 var newBody = "";
 if (ogPRBody.indexOf(msgSeparatorStart) === -1) {
     // First time updating this description
-    newBody = ogPRBody + msgSeparatorStart + links + msgSeparatorEnd
+    newBody = ogPRBody + msgSeparatorStart + title + links + msgSeparatorEnd
 } else {
     // Already updated this description before
     newBody = ogPRBody.slice(0, ogPRBody.indexOf(msgSeparatorStart));
-    newBody = newBody + msgSeparatorStart + links + msgSeparatorEnd;
+    newBody = newBody + msgSeparatorStart + title + links + msgSeparatorEnd;
     // just incase someone added more text after
     newBody = newBody + ogPRBody.slice(ogPRBody.indexOf(msgSeparatorEnd) + msgSeparatorEnd.length);
 }

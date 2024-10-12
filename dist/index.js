@@ -33,23 +33,23 @@ console.log(artifactsResp.data);
 const artifacts = artifactsResp.data.artifacts;
 var links = "";
 for (const artifact of artifacts) {
-  links += `[${artifact.name}](https://nightly.link/${inputs.repoOwner}/${inputs.repoName}/actions/runs/${inputs.runId}/${artifact.name}.zip)
+  links += `- [${artifact.name}](https://nightly.link/${inputs.repoOwner}/${inputs.repoName}/actions/runs/${inputs.runId}/${artifact.name}.zip)\r
 `;
 }
 const msgSeparatorStart = `\r
 \r
-<!-- download-section ${prNumber} start (DO NOT EDIT BELOW) -->\r
-----\r
+<!-- artifact-comment-section ${prNumber} start (DO NOT EDIT BELOW) -->\r
 `;
+const title = "----\r\n\u{1F4E6} Artifacts generated:\r\n";
 const msgSeparatorEnd = `\r
 ----\r
-<!-- download-section ${prNumber} end (DO NOT EDIT ABOVE) -->`;
+<!-- artifact-comment-section ${prNumber} end (DO NOT EDIT ABOVE) -->`;
 var newBody = "";
 if (ogPRBody.indexOf(msgSeparatorStart) === -1) {
-  newBody = ogPRBody + msgSeparatorStart + links + msgSeparatorEnd;
+  newBody = ogPRBody + msgSeparatorStart + title + links + msgSeparatorEnd;
 } else {
   newBody = ogPRBody.slice(0, ogPRBody.indexOf(msgSeparatorStart));
-  newBody = newBody + msgSeparatorStart + links + msgSeparatorEnd;
+  newBody = newBody + msgSeparatorStart + title + links + msgSeparatorEnd;
   newBody = newBody + ogPRBody.slice(ogPRBody.indexOf(msgSeparatorEnd) + msgSeparatorEnd.length);
 }
 await octokit.request(updatePullRequest, {
