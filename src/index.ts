@@ -45,7 +45,22 @@ const artifacts = artifactsResp.data.artifacts
 
 var links = ""
 for (const artifact of artifacts) {
-    links += `https://nightly.link/${inputs.repoOwner}/${inputs.repoName}/actions/runs/${inputs.runId}/${artifact.name}.zip\n`
+    links += `[${artifact.name}](https://nightly.link/${inputs.repoOwner}/${inputs.repoName}/actions/runs/${inputs.runId}/${artifact.name}.zip)\n`
+}
+
+const msgSeparatorStart = `\r\n\r\n<!-- download-section ${prNumber} start -->\r\n`;
+const msgSeparatorEnd = `\r\n<!-- download-section ${prNumber} end -->`;
+
+var newBody = "";
+if (ogPRBody.indexOf(msgSeparatorStart) === -1) {
+    // First time updating this description
+    newBody = ogPRBody + msgSeparatorStart + links + msgSeparatorEnd
+} else {
+    // Already updated this description before
+    newBody = ogPRBody.slice(0, ogPRBody.indexOf(msgSeparatorStart));
+    newBody = newBody + msgSeparatorStart + links + msgSeparatorEnd;
+    // just incase someone added more text after
+    newBody = newBody + ogPRBody.slice(ogPRBody.indexOf(msgSeparatorEnd) + msgSeparatorEnd.length);
 }
 
 await octokit.request(updatePullRequest, {

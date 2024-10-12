@@ -33,8 +33,22 @@ console.log(artifactsResp.data);
 const artifacts = artifactsResp.data.artifacts;
 var links = "";
 for (const artifact of artifacts) {
-  links += `https://nightly.link/${inputs.repoOwner}/${inputs.repoName}/actions/runs/${inputs.runId}/${artifact.name}.zip
+  links += `[${artifact.name}](https://nightly.link/${inputs.repoOwner}/${inputs.repoName}/actions/runs/${inputs.runId}/${artifact.name}.zip)
 `;
+}
+const msgSeparatorStart = `\r
+\r
+<!-- download-section ${prNumber} start -->\r
+`;
+const msgSeparatorEnd = `\r
+<!-- download-section ${prNumber} end -->`;
+var newBody = "";
+if (ogPRBody.indexOf(msgSeparatorStart) === -1) {
+  newBody = ogPRBody + msgSeparatorStart + links + msgSeparatorEnd;
+} else {
+  newBody = ogPRBody.slice(0, ogPRBody.indexOf(msgSeparatorStart));
+  newBody = newBody + msgSeparatorStart + links + msgSeparatorEnd;
+  newBody = newBody + ogPRBody.slice(ogPRBody.indexOf(msgSeparatorEnd) + msgSeparatorEnd.length);
 }
 await octokit.request(updatePullRequest, {
   owner: inputs.repoOwner,
