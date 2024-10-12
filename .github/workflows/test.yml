@@ -12,3 +12,5 @@ jobs:
       pull-requests: write
     steps:
       - uses: benwoo1110/artifact-comment-action@test
+        with:
+            github_token: ${{ secrets.GITHUB_TOKEN }}
