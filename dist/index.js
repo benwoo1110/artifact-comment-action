@@ -22,11 +22,14 @@ const getPrResp = await octokit.request(getPullRequest, {
   pull_number: prNumber
 });
 const pr = getPrResp.data;
+const ogPRBody = pr.body ? pr.body : "";
+console.log(pr);
 const artifactsResp = await octokit.request(listWorkflowRunArtifacts, {
   owner: inputs.repoOwner,
   repo: inputs.repoName,
   run_id: inputs.runId
 });
+console.log(artifactsResp.data);
 const artifacts = artifactsResp.data.artifacts;
 var links = "";
 for (const artifact of artifacts) {
@@ -36,6 +39,7 @@ await octokit.request(updatePullRequest, {
   owner: inputs.repoOwner,
   repo: inputs.repoName,
   pull_number: pr.number,
-  body: pr.body + `
+  body: ogPRBody + `
+ HERE ARE THE LINKS:
 ${links}`
 });

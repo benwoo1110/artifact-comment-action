@@ -32,14 +32,17 @@ const getPrResp: GetPullRequest["response"] = await octokit.request(getPullReque
     pull_number: prNumber,
 })
 const pr = getPrResp.data
+const ogPRBody = pr.body ? pr.body : ""
+console.log(pr)
 
 const artifactsResp: ListWorkflowRunArtifacts["response"] = await octokit.request(listWorkflowRunArtifacts, {
     owner: inputs.repoOwner,
     repo: inputs.repoName,
     run_id: inputs.runId
 })
-
+console.log(artifactsResp.data)
 const artifacts = artifactsResp.data.artifacts
+
 var links = ""
 for (const artifact of artifacts) {
     links += artifact.archive_download_url + "\n"
@@ -49,5 +52,5 @@ await octokit.request(updatePullRequest, {
     owner: inputs.repoOwner,
     repo: inputs.repoName,
     pull_number: pr.number,
-    body: pr.body + `\n${links}`,
+    body: ogPRBody + `\n HERE ARE THE LINKS:\n${links}`,
 })
