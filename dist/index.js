@@ -23,14 +23,14 @@ const getPrResp = await octokit.request(getPullRequest, {
 });
 const pr = getPrResp.data;
 const ogPRBody = pr.body ? pr.body : "";
-console.log(pr);
+core.info(`successfully fetched pull request ${prNumber} from ${inputs.repoOwner}/${inputs.repoName}`);
 const artifactsResp = await octokit.request(listWorkflowRunArtifacts, {
   owner: inputs.repoOwner,
   repo: inputs.repoName,
   run_id: inputs.runId
 });
-console.log(artifactsResp.data);
 const artifacts = artifactsResp.data.artifacts;
+core.info(`successfully fetched ${artifacts.length} artifacts for workflow ${inputs.runId}`);
 var links = "";
 for (const artifact of artifacts) {
   links += `- [${artifact.name}](https://nightly.link/${inputs.repoOwner}/${inputs.repoName}/actions/runs/${inputs.runId}/${artifact.name}.zip)\r
@@ -57,3 +57,4 @@ await octokit.request(updatePullRequest, {
   pull_number: pr.number,
   body: newBody
 });
+core.info(`successfully updated pull request ${prNumber} with ${artifacts.length} artifact links!`);
