@@ -1,46 +1,53 @@
 import core from '@actions/core'
 import github from '@actions/github'
-import { listAssociatedPullRequests, ListAssociatedPullRequests, updatePullRequest } from './endpoints.js'
-import { exit } from 'process'
+import { getPullRequest, GetPullRequest, ListWorkflowRunArtifacts, listWorkflowRunArtifacts, updatePullRequest } from './endpoints.js'
 
 interface Inputs {
     githubToken: string
     repoOwner: string
     repoName: string
+    runId: number
 }
 
 const inputs: Inputs = {
     githubToken: core.getInput('github_token', { required: true }),
-    repoOwner: core.getInput('repo_owner',),
-    repoName: core.getInput('repo_name'),
+    repoOwner: core.getInput('repo_owner',) || github.context.repo.owner,
+    repoName: core.getInput('repo_name') || github.context.repo.repo,
+    runId: github.context.runId
 }
 
 const octokit = github.getOctokit(inputs.githubToken)
 
-const owner = inputs.repoOwner === '' ? github.context.repo.owner : inputs.repoOwner
-const repo = inputs.repoName === '' ? github.context.repo.repo : inputs.repoName
-const runId = github.context.runId //todo customizable option
+const parsePullRequestNumber = (githubRef: string) => {
+    const result = /refs\/pull\/(\d+)\/merge/g.exec(githubRef);
+    if (!result) throw new Error("Reference not found.");
+    const [, pullRequestId] = result;
+    return parseInt(pullRequestId);
+};
+const prNumber: number = parsePullRequestNumber(github.context.ref);
 
+const getPrResp: GetPullRequest["response"] = await octokit.request(getPullRequest, {
+    owner: inputs.repoOwner,
+    repo: inputs.repoName,
+    pull_number: prNumber,
+})
+const pr = getPrResp.data
 
-const associatedPrs: ListAssociatedPullRequests["response"] = await octokit.request(listAssociatedPullRequests, {
-    owner,
-    repo,
-    commit_sha: github.context.sha,
+const artifactsResp: ListWorkflowRunArtifacts["response"] = await octokit.request(listWorkflowRunArtifacts, {
+    owner: inputs.repoOwner,
+    repo: inputs.repoName,
+    run_id: inputs.runId
 })
 
-if (associatedPrs.data.length === 0) {
-    core.error('No PRs associated with this commit.')
-    exit(0)
+const artifacts = artifactsResp.data.artifacts
+var links = ""
+for (const artifact of artifacts) {
+    links += artifact.archive_download_url + "\n"
 }
 
-const pr = associatedPrs.data[0]
-
-const link = `https://nightly.link/${inputs.repoOwner}/${inputs.repoName}/actions/runs/${runId}/multiverse-core-pr${pr.number}.zip`
-console.log(link)
-
 await octokit.request(updatePullRequest, {
-    owner,
-    repo,
+    owner: inputs.repoOwner,
+    repo: inputs.repoName,
     pull_number: pr.number,
-    body: pr.body + `\n\n${link}`,
+    body: pr.body + `\n${links}`,
 })

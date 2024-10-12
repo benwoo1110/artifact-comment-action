@@ -1,7 +1,9 @@
 import { Endpoints } from '@octokit/types'
 
-export const listAssociatedPullRequests = 'GET /repos/{owner}/{repo}/commits/{commit_sha}/pulls' as const
+export const getPullRequest = 'GET /repos/{owner}/{repo}/pulls/{pull_number}' as const
 export const updatePullRequest = 'PATCH /repos/{owner}/{repo}/pulls/{pull_number}' as const
+export const listWorkflowRunArtifacts = 'GET /repos/{owner}/{repo}/actions/runs/{run_id}/artifacts' as const
 
-export type ListAssociatedPullRequests = Endpoints[typeof listAssociatedPullRequests]
+export type GetPullRequest = Endpoints[typeof getPullRequest]
 export type UpdatePullRequest = Endpoints[typeof updatePullRequest]
+export type ListWorkflowRunArtifacts = Endpoints[typeof listWorkflowRunArtifacts]
