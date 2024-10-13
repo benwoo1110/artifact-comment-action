@@ -1,5 +1,5 @@
-name: 'Advanced Semantic Release Action'
-description: 'Automate the whole package release workflow with semantic-release.'
+name: 'Artifact Comment Action'
+description: 'Comment artifacts generated in pull requests.'
 
 branding:
   icon: 'package'
@@ -15,20 +15,9 @@ inputs:
   repo_name:
     description: 'The name of the repository'
     required: false
-
-# outputs:
-#   release_created:
-#     description: 'Whether a release was created'
-#   tag_name:
-#     description: 'The version that was released'
-#   prerelease:
-#     description: 'Whether the release is a prerelease'
-#   body:
-#     description: 'The body of the release'
-#   publish_version:
-#     description: 'The build version of the release'
-#   release_type:
-#     description: 'The type of release. Either beta or release.'
+  run_id:
+    description: 'The ID number of the workflow run'
+    required: false
 
 runs:
   using: 'node20'

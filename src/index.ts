@@ -6,14 +6,14 @@ interface Inputs {
     githubToken: string
     repoOwner: string
     repoName: string
-    runId: number
+    runId: string
 }
 
 const inputs: Inputs = {
     githubToken: core.getInput('github_token', { required: true }),
     repoOwner: core.getInput('repo_owner',) || github.context.repo.owner,
     repoName: core.getInput('repo_name') || github.context.repo.repo,
-    runId: github.context.runId
+    runId: core.getInput('run_id') || github.context.runId.toString(),
 }
 
 const octokit = github.getOctokit(inputs.githubToken)
@@ -38,28 +38,28 @@ core.info(`successfully fetched pull request ${prNumber} from ${inputs.repoOwner
 const artifactsResp: ListWorkflowRunArtifacts["response"] = await octokit.request(listWorkflowRunArtifacts, {
     owner: inputs.repoOwner,
     repo: inputs.repoName,
-    run_id: inputs.runId
+    run_id: parseInt(inputs.runId),
 })
 const artifacts = artifactsResp.data.artifacts
 core.info(`successfully fetched ${artifacts.length} artifacts for workflow ${inputs.runId}`)
 
-var links = ""
+const msgSeparatorStart = `\r\n\r\n<!-- artifact-comment-section ${prNumber} start (DO NOT EDIT BELOW) -->\r\n`;
+const header = "----\r\n📦 Artifacts generated:\r\n"
+const msgSeparatorEnd = `\r\n<!-- artifact-comment-section ${prNumber} end (DO NOT EDIT ABOVE) -->`;
+
+let links = ""
 for (const artifact of artifacts) {
     links += `- [${artifact.name}](https://nightly.link/${inputs.repoOwner}/${inputs.repoName}/actions/runs/${inputs.runId}/${artifact.name}.zip)\r\n`
 }
 
-const msgSeparatorStart = `\r\n\r\n<!-- artifact-comment-section ${prNumber} start (DO NOT EDIT BELOW) -->\r\n`;
-const title = "----\r\n📦 Artifacts generated:\r\n"
-const msgSeparatorEnd = `\r\n<!-- artifact-comment-section ${prNumber} end (DO NOT EDIT ABOVE) -->`;
-
-var newBody = "";
+let newBody = "";
 if (ogPRBody.indexOf(msgSeparatorStart) === -1) {
     // First time updating this description
-    newBody = ogPRBody + msgSeparatorStart + title + links + msgSeparatorEnd
+    newBody = ogPRBody + msgSeparatorStart + header + links + msgSeparatorEnd
 } else {
     // Already updated this description before
     newBody = ogPRBody.slice(0, ogPRBody.indexOf(msgSeparatorStart));
-    newBody = newBody + msgSeparatorStart + title + links + msgSeparatorEnd;
+    newBody = newBody + msgSeparatorStart + header + links + msgSeparatorEnd;
     // just incase someone added more text after
     newBody = newBody + ogPRBody.slice(ogPRBody.indexOf(msgSeparatorEnd) + msgSeparatorEnd.length);
 }
